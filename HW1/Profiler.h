@@ -8,9 +8,6 @@
 #ifdef __linux__
 #include <unistd.h>
 #endif
-#ifdef __cplusplus
-extern "C" {
-#endif 
 typedef enum{
 	PRECISION_NS,
 	PRECISION_US,
@@ -34,6 +31,3 @@ double TimerLap(Timer* t);
 double TimerEnd(Timer* t);
 char* GetMemoryRepr(char* buffer, unsigned int i);
 unsigned int MemoryInfo();
-#ifdef __cplusplus
-	}
-#endif 
