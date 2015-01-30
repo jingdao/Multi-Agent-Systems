@@ -1,0 +1,6 @@
+HW1/*
+**/*.swp
+!HW1/*.c
+!HW1/*.cpp
+!HW1/*.h
+!HW1/Makefile
