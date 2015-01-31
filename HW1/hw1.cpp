@@ -4,18 +4,68 @@
 #include "hw1.h"
 #include "Profiler.h"
 
-AuctionSolver::AuctionSolver(int numAgents) {
+AuctionSolver::AuctionSolver(int numAgents,int* values) {
 	this->numAgents=numAgents;
-}
-
-void AuctionSolver::setValues(int* values) {
+	this->epsilon=1.0f/(numAgents+1);
 	this->values=values;
 }
 
 int AuctionSolver::getAssignment(int* assignment) {
-	assignment[0]=0;
-	assignment[1]=1;
-	assignment[2]=2;
+	if (numAgents==1) {
+		assignment[0]=1;
+		return values[0];
+	}
+	float prices[numAgents];
+	int feasible=0, currentAgent=0;
+	int owners[numAgents];
+	for (int i=0;i<numAgents;i++) {
+		assignment[i]=-1;
+		owners[i]=-1;
+		prices[i]=0;
+	}
+	while (feasible<numAgents) {
+		while (assignment[currentAgent]!=-1) {
+			currentAgent++;
+			currentAgent%=numAgents;
+		}
+		int favorite;
+		float bestValue,secondBestValue,p0,p1;
+		p0=values[currentAgent*numAgents]-prices[0];
+		p1=values[currentAgent*numAgents+1]-prices[1];
+		if (p0>=p1) {
+			favorite=0;
+			bestValue=p0;
+			secondBestValue=p1;
+		} else {
+			favorite=1;
+			bestValue=p1;
+			secondBestValue=p0;
+		}
+		for (int i=2;i<numAgents;i++) {
+			p0=values[currentAgent*numAgents+i]-prices[i];
+			if (p0>=bestValue) {
+				secondBestValue=bestValue;
+				favorite=i;
+				bestValue=p0;
+			} else if (p0>=secondBestValue) {
+				secondBestValue=p0;
+			}
+		}
+		float bid = bestValue-secondBestValue+epsilon;
+		prices[favorite]+=bid;
+		if (owners[favorite]==-1) {
+			assignment[currentAgent]=favorite;
+			owners[favorite]=currentAgent;
+			feasible++;
+		} else {
+			assignment[owners[favorite]]=-1;
+			assignment[currentAgent]=favorite;
+			owners[favorite]=currentAgent;
+		}
+//		for (int i=0;i<numAgents;i++) {
+//			printf("%f\n",prices[i]);
+//		}
+	}
 	int totalValue=0;
 	for (int i=0;i<numAgents;i++) {
 		totalValue+=values[i*numAgents+assignment[i]];
@@ -24,56 +74,108 @@ int AuctionSolver::getAssignment(int* assignment) {
 }
 
 int AuctionSolver::LPSolve(int* assignment) {
-	glp_prob *lp;
-	int ia[1+1000], ja[1+1000];
-	double ar[1+1000], z, x1, x2;
-	/* create problem */
-	lp = glp_create_prob();
-	glp_set_prob_name(lp, "short");
+	glp_prob *lp= glp_create_prob();
 	glp_set_obj_dir(lp, GLP_MAX);
-	/* fill problem */
-	glp_add_rows(lp, 2);
-	glp_set_row_name(lp, 1, "p");
-	glp_set_row_bnds(lp, 1, GLP_UP, 0.0, 1.0);
-	glp_set_row_name(lp, 2, "q");
-	glp_set_row_bnds(lp, 2, GLP_UP, 0.0, 2.0);
-	glp_add_cols(lp, 2);
-	glp_set_col_name(lp, 1, "x1");
-	glp_set_col_bnds(lp, 1, GLP_LO, 0.0, 0.0);
-	glp_set_obj_coef(lp, 1, 0.6);
-	glp_set_col_name(lp, 2, "x2");
-	glp_set_col_bnds(lp, 2, GLP_LO, 0.0, 0.0);
-	glp_set_obj_coef(lp, 2, 0.5);
-	ia[1] = 1, ja[1] = 1, ar[1] = 1.0; /* a[1,1] = 1 */
-	ia[2] = 1, ja[2] = 2, ar[2] = 2.0; /* a[1,2] = 2 */
-	ia[3] = 2, ja[3] = 1, ar[3] = 3.0; /* a[2,1] = 3 */
-	ia[4] = 2, ja[4] = 2, ar[4] = 1.0; /* a[2,2] = 1 */
-	glp_load_matrix(lp, 4, ia, ja, ar);
-	/* solve problem */
-	glp_simplex(lp, NULL);
-	/* recover and display results */
-	z = glp_get_obj_val(lp);
-	x1 = glp_get_col_prim(lp, 1);
-	x2 = glp_get_col_prim(lp, 2);
-	printf("z = %g; x1 = %g; x2 = %g\n", z, x1, x2);
-	/* housekeeping */
+	int numRows=2*numAgents,numColumns=numAgents*numAgents;
+	//objective function
+	glp_add_cols(lp,numColumns);
+	for (int i=1;i<=numColumns;i++) {
+		glp_set_col_bnds(lp, i, GLP_LO, 0.0, 0.0);
+		glp_set_obj_coef(lp,i,values[i-1]);
+	}
+	//constraints
+	glp_add_rows(lp,numRows);
+	for (int i=1;i<=numRows;i++) {
+		glp_set_row_bnds(lp, i, GLP_UP, 0.0, 1.0);
+	}
+	//fill coefficient matrix
+	int ne=numRows*numAgents;
+	int ia[ne+1],ja[ne+1];
+	double ar[ne+1];
+	int p=1;
+	for (int i=0;i<numAgents;i++) {
+		for (int j=0;j<numAgents;j++) {
+			ia[p]=i+1;
+			ja[p]=j+i*numAgents+1;
+			ar[p]=1;
+			p++;
+			ia[p]=i+numAgents+1;
+			ja[p]=i+j*numAgents+1;
+			ar[p]=1;
+			p++;
+		}
+	}
+//	for (int i=0;i<p;i++) {
+//		printf("%d %d %f\n",ia[i],ja[i],ar[i]);
+//	}
+	glp_load_matrix(lp,ne,ia,ja,ar);
+	//solve problem
+	glp_simplex(lp,NULL);
+//	for (int i=1;i<=numColumns;i++) {
+//		printf("%f\n",glp_get_col_prim(lp,i));
+//	}
+	for (int i=0;i<numAgents;i++) {
+		for (int j=0;j<numAgents;j++) {
+			if (glp_get_col_prim(lp,i*numAgents+j+1)>0) {
+				assignment[i]=j;
+				break;
+			}
+		}
+	}
+	double totalValue = glp_get_obj_val(lp);
 	glp_delete_prob(lp);
+	return (int)totalValue;
 }
 
+	void genRandom(int* values,int n,int M) {
+		if (M>RAND_MAX) {
+			for (int i=0;i<n*n;i++) {
+				values[i]=(int)(1.0/RAND_MAX*rand()/M);
+//				printf("%d\n",values[i]);
+			}
+		} else {
+			for (int i=0;i<n*n;i++) {
+				values[i]=rand()%M;
+//				printf("%d\n",values[i]);
+			}
+		}
+	}
+
 int main(int argc, char** argv) {
+	srand(0);
 	glp_term_out(GLP_MSG_OFF);
 	Timer* tm = TimerStart();
-	AuctionSolver* as = new AuctionSolver(3);
-	int values[]  = {2,4,0,1,5,0,1,3,2};
-	as->setValues(values);
-	int assignment[3];
+	int values2[]  = {2,4,0,1,5,0,1,3,2};
+	int values[]  = {19,88,91,29,63,33,30, 5, 6,31,
+					  7,29,35,71,93,85,95,76,22, 2,
+					 48,64,70,50,88,22,61,20,34,51,
+					 80,70,48,34,16,88,47,45,82,82,
+					 80,97,25,17,17,49,19,56,44,95,
+					  1,46,19,24,35,62,80,72, 0,35,
+					 63,17,18,51,62,19,86,50,94,92,
+					 23,86,20,96,17,20,30,37,55,15,
+					 39,91,12,24,15,19,91, 0,29,37,
+					 95,87,36,25,81,19,27,16,29,97};
+	AuctionSolver* as = new AuctionSolver(3,values2);
+	int assignment[as->numAgents];
 	int res = as->getAssignment(assignment);
 	double duration1 = TimerLap(tm);
-	as->LPSolve(assignment);
+	printf("Value: %d Assignment: ",res);
+	for (int i=0;i<as->numAgents;i++) {
+		printf("%d ",assignment[i]);
+	}
+	printf("\n");
+	as = new AuctionSolver(10,values);
+	int assignment2[as->numAgents];
+	int res2 = as->LPSolve(assignment2);
 	double duration2 = TimerEnd(tm);
+	printf("Value: %d Assignment: ",res2);
+	for (int i=0;i<as->numAgents;i++) {
+		printf("%d ",assignment2[i]);
+	}
+	printf("\n");
 	delete as;
+	genRandom(values,5,10);
 	glp_free_env();
-	std::cout<<"Value: "<<res<<"\nAssignment: "<<assignment[0]<<" "<<assignment[1]<<" "<<assignment[2]<<"\n";
 	std::cout<<"Time: "<<duration1<<" vs "<<duration2<<"\n";
-	std::cout<<"Hello World\n";
 }
