@@ -3,4 +3,5 @@ HW1/*
 !HW1/*.c
 !HW1/*.cpp
 !HW1/*.h
+!HW1/*.csv
 !HW1/Makefile

@@ -110,7 +110,13 @@ int AuctionSolver::LPSolve(int* assignment) {
 //	}
 	glp_load_matrix(lp,ne,ia,ja,ar);
 	//solve problem
-	glp_simplex(lp,NULL);
+	glp_smcp parm;
+	glp_init_smcp(&parm);
+	parm.meth=GLP_PRIMAL;
+	glp_simplex(lp,&parm);
+//	glp_iptcp parm;
+//	glp_init_iptcp(&parm);
+//	glp_interior(lp,&parm);
 //	for (int i=1;i<=numColumns;i++) {
 //		printf("%f\n",glp_get_col_prim(lp,i));
 //	}
@@ -127,6 +133,12 @@ int AuctionSolver::LPSolve(int* assignment) {
 	return (int)totalValue;
 }
 
+	GaleShapleySolver::GaleShapleySolver(int numAgents,int* mPreferences,int* wPreferences) {
+		this->numAgents=numAgents;
+		this->mPreferences=mPreferences;
+		this->wPreferences=wPreferences;
+	}
+
 	void genRandom(int* values,int n,int M) {
 		if (M>RAND_MAX) {
 			for (int i=0;i<n*n;i++) {
@@ -141,41 +153,96 @@ int AuctionSolver::LPSolve(int* assignment) {
 		}
 	}
 
+	void plotAverageAssignment() {
+		int M=100;
+		int values[256*256];
+		int assignment[256];
+		int auctionResult,lpResult,auctionSum,lpSum;
+		for (int n=2;n<=256;n<<=1) {
+			auctionSum=0;
+			lpSum=0;
+			for (int i=0;i<1000;i++) {
+				genRandom(values,n,M);
+				AuctionSolver* as = new AuctionSolver(n,values);
+				auctionResult=as->getAssignment(assignment);
+//				lpResult=as->LPSolve(assignment);
+//				if (auctionResult!=lpResult) printf("Fail: %d %d %d\n",n,auctionResult,lpResult);
+				auctionSum+=auctionResult;
+//				lpSum+=lpResult;
+				delete as;
+			}
+//			printf("%d %f %f\n",n,1.0*auctionSum/n/1000,1.0*lpSum/n/1000);
+			printf("%d,%f\n",n,1.0*auctionSum/n/1000);
+		}
+	}
+
+	void plotTiming() {
+		int n=10;
+		int values[n*n];
+		int assignment[n];
+		double auctionTime, lpTime;
+		Timer* tm = TimerStart();
+		for (int M=10;M<=10000000;M*=10) {
+			for (int i=0;i<100;i++) {
+				genRandom(values,n,M);
+				AuctionSolver* as = new AuctionSolver(n,values);
+				as->getAssignment(assignment);
+				delete as;
+			}
+			auctionTime=TimerLap(tm);
+//			for (int i=0;i<100;i++) {
+//				genRandom(values,n,M);
+//				AuctionSolver* as = new AuctionSolver(n,values);
+//				as->LPSolve(assignment);
+//				delete as;
+//			}
+//			lpTime=TimerLap(tm);
+			printf("%8d,%f,%f\n",M,1.0*auctionTime/100,1.0*lpTime/100);
+		}
+		TimerEnd(tm);
+	}
+
+	void testAlgorithm() {
+		Timer* tm = TimerStart();
+		int values2[]  = {2,4,0,1,5,0,1,3,2};
+		int values[]  = {19,88,91,29,63,33,30, 5, 6,31,
+						  7,29,35,71,93,85,95,76,22, 2,
+						 48,64,70,50,88,22,61,20,34,51,
+						 80,70,48,34,16,88,47,45,82,82,
+						 80,97,25,17,17,49,19,56,44,95,
+						  1,46,19,24,35,62,80,72, 0,35,
+						 63,17,18,51,62,19,86,50,94,92,
+						 23,86,20,96,17,20,30,37,55,15,
+						 39,91,12,24,15,19,91, 0,29,37,
+						 95,87,36,25,81,19,27,16,29,97};
+		AuctionSolver* as = new AuctionSolver(3,values2);
+		int assignment[as->numAgents];
+		int res = as->getAssignment(assignment);
+		double duration1 = TimerLap(tm);
+		printf("Value: %d Assignment: ",res);
+		for (int i=0;i<as->numAgents;i++) {
+			printf("%d ",assignment[i]);
+		}
+		printf("\n");
+		delete as;
+		as = new AuctionSolver(10,values);
+		int assignment2[as->numAgents];
+		int res2 = as->LPSolve(assignment2);
+		double duration2 = TimerEnd(tm);
+		printf("Value: %d Assignment: ",res2);
+		for (int i=0;i<as->numAgents;i++) {
+			printf("%d ",assignment2[i]);
+		}
+		printf("\n");
+		std::cout<<"Time: "<<duration1<<" vs "<<duration2<<"\n";
+		delete as;
+	}
+
 int main(int argc, char** argv) {
 	srand(0);
 	glp_term_out(GLP_MSG_OFF);
-	Timer* tm = TimerStart();
-	int values2[]  = {2,4,0,1,5,0,1,3,2};
-	int values[]  = {19,88,91,29,63,33,30, 5, 6,31,
-					  7,29,35,71,93,85,95,76,22, 2,
-					 48,64,70,50,88,22,61,20,34,51,
-					 80,70,48,34,16,88,47,45,82,82,
-					 80,97,25,17,17,49,19,56,44,95,
-					  1,46,19,24,35,62,80,72, 0,35,
-					 63,17,18,51,62,19,86,50,94,92,
-					 23,86,20,96,17,20,30,37,55,15,
-					 39,91,12,24,15,19,91, 0,29,37,
-					 95,87,36,25,81,19,27,16,29,97};
-	AuctionSolver* as = new AuctionSolver(3,values2);
-	int assignment[as->numAgents];
-	int res = as->getAssignment(assignment);
-	double duration1 = TimerLap(tm);
-	printf("Value: %d Assignment: ",res);
-	for (int i=0;i<as->numAgents;i++) {
-		printf("%d ",assignment[i]);
-	}
-	printf("\n");
-	as = new AuctionSolver(10,values);
-	int assignment2[as->numAgents];
-	int res2 = as->LPSolve(assignment2);
-	double duration2 = TimerEnd(tm);
-	printf("Value: %d Assignment: ",res2);
-	for (int i=0;i<as->numAgents;i++) {
-		printf("%d ",assignment2[i]);
-	}
-	printf("\n");
-	delete as;
-	genRandom(values,5,10);
+	plotTiming();
+//	plotAverageAssignment();
+//	testAlgorithm();
 	glp_free_env();
-	std::cout<<"Time: "<<duration1<<" vs "<<duration2<<"\n";
 }
