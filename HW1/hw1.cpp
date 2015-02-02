@@ -139,10 +139,20 @@ int AuctionSolver::LPSolve(int* assignment) {
 		this->wPreferences=wPreferences;
 	}
 
+	void GaleShapleySolver::getAssignment(int* assignment) {
+		for (int i=0;i<numAgents;i++) {
+			assignment[i]=-1;
+		}
+	}
+
+	void LPSolve(int* assignment) {
+
+	}
 	void genRandom(int* values,int n,int M) {
 		if (M>RAND_MAX) {
+//		if (1) {
 			for (int i=0;i<n*n;i++) {
-				values[i]=(int)(1.0/RAND_MAX*rand()/M);
+				values[i]=(int)(1.0*rand()/RAND_MAX/M);
 //				printf("%d\n",values[i]);
 			}
 		} else {
@@ -177,32 +187,39 @@ int AuctionSolver::LPSolve(int* assignment) {
 	}
 
 	void plotTiming() {
-		int n=10;
+		int n=256;
 		int values[n*n];
 		int assignment[n];
 		double auctionTime, lpTime;
+		int numAverages=100;
 		Timer* tm = TimerStart();
 		for (int M=10;M<=10000000;M*=10) {
-			for (int i=0;i<100;i++) {
+			auctionTime=0;
+			lpTime=0;
+			for (int i=0;i<numAverages;i++) {
 				genRandom(values,n,M);
 				AuctionSolver* as = new AuctionSolver(n,values);
+				TimerLap(tm);
 				as->getAssignment(assignment);
+				auctionTime+=TimerLap(tm);
 				delete as;
 			}
-			auctionTime=TimerLap(tm);
-//			for (int i=0;i<100;i++) {
-//				genRandom(values,n,M);
-//				AuctionSolver* as = new AuctionSolver(n,values);
-//				as->LPSolve(assignment);
-//				delete as;
-//			}
+//			auctionTime=TimerLap(tm);
+			for (int i=0;i<numAverages;i++) {
+				genRandom(values,n,M);
+				AuctionSolver* as = new AuctionSolver(n,values);
+				TimerLap(tm);
+				as->LPSolve(assignment);
+				lpTime+=TimerLap(tm);
+				delete as;
+			}
 //			lpTime=TimerLap(tm);
-			printf("%8d,%f,%f\n",M,1.0*auctionTime/100,1.0*lpTime/100);
+			printf("%8d,%f,%f\n",M,1.0*auctionTime/numAverages,1.0*lpTime/numAverages);
 		}
 		TimerEnd(tm);
 	}
 
-	void testAlgorithm() {
+	void testAuction() {
 		Timer* tm = TimerStart();
 		int values2[]  = {2,4,0,1,5,0,1,3,2};
 		int values[]  = {19,88,91,29,63,33,30, 5, 6,31,
@@ -238,11 +255,24 @@ int AuctionSolver::LPSolve(int* assignment) {
 		delete as;
 	}
 
+	void testMatching() {
+		int mPreferences[] ={1,2,3,2,1,3,1,2,3};
+		int wPreferences[] ={2,1,3,1,2,3,1,2,3};
+		int assignment[3];
+		GaleShapleySolver* gs = new GaleShapleySolver(3,mPreferences,wPreferences);
+		gs->getAssignment(assignment);
+		for (int i=0;i<3;i++) {
+			printf("%d\n",assignment[i]);
+		}
+		delete gs;
+	}
+
 int main(int argc, char** argv) {
 	srand(0);
 	glp_term_out(GLP_MSG_OFF);
 	plotTiming();
 //	plotAverageAssignment();
-//	testAlgorithm();
+//	testAuction();
+//	testMatching();
 	glp_free_env();
 }
