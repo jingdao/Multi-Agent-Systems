@@ -149,16 +149,16 @@ int AuctionSolver::LPSolve(int* assignment) {
 
 	}
 	void genRandom(int* values,int n,int M) {
-		if (M>RAND_MAX) {
-//		if (1) {
+//		if (M>RAND_MAX) {
+		if (0) {
 			for (int i=0;i<n*n;i++) {
-				values[i]=(int)(1.0*rand()/RAND_MAX/M);
-//				printf("%d\n",values[i]);
+				values[i]=(int)(1.0*rand()/RAND_MAX*M);
+//				printf("d %d\n",values[i]);
 			}
 		} else {
 			for (int i=0;i<n*n;i++) {
 				values[i]=rand()%M;
-//				printf("%d\n",values[i]);
+//				printf("m %d\n",values[i]);
 			}
 		}
 	}
@@ -191,9 +191,10 @@ int AuctionSolver::LPSolve(int* assignment) {
 		int values[n*n];
 		int assignment[n];
 		double auctionTime, lpTime;
-		int numAverages=100;
+		int numAverages=10;
 		Timer* tm = TimerStart();
-		for (int M=10;M<=10000000;M*=10) {
+		for (int M=10000000;M>=10;M/=10) {
+//		for (int M=10;M<=10000000;M*=10) {
 			auctionTime=0;
 			lpTime=0;
 			for (int i=0;i<numAverages;i++) {
