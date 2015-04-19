@@ -1,0 +1,27 @@
+#include "User.h"
+
+User::User(double cash,int initial_shares,char* name) {
+	this->cash = cash;
+	this->initial_cash = this->cash;
+	this->shares = initial_shares;
+	this->initial_shares = this->shares;
+	this->name = name;
+}
+
+void User::change_cash(double amount) {
+	cash+=amount;
+}
+
+void User::change_portfolio(double amount) {
+	shares += amount;
+}
+
+double User::profit(double stock_values) {
+	double profit=0.0;
+	profit += stock_values * (shares-initial_shares);
+	profit += cash - initial_cash;
+	return profit;
+}
+
+
+
