@@ -8,7 +8,6 @@ LMSR::LMSR(double max_loss, int quantity_outstanding,double mu,User* user_accoun
 		this->user_account=user_account;
 	else
 		this->user_account=new User(0,0);
-
 }
 
 double LMSR::execute(Transaction buysell,int quantity,User* user,bool cancel) {
@@ -22,7 +21,7 @@ double LMSR::execute(Transaction buysell,int quantity,User* user,bool cancel) {
 double LMSR::price_check(Transaction buysell,int quantity) {
 	double offered_price,new_mu;
 	int new_quantity_outstanding;
-	get_update(buysell,quantity,&offered_price,&quantity_outstanding,&mu);
+	get_update(buysell,quantity,&offered_price,&new_quantity_outstanding,&new_mu);
 	return offered_price;
 }
 

@@ -15,6 +15,7 @@ void MarketMaker::hansonPriceCheck(Transaction transaction,int qtyToBuySell,int 
     double cost_final = maxLoss * log(exp(*newq1/maxLoss) + exp(newq2/maxLoss));
     *costToUser = (cost_final - cost_init) * 100;
     *currentPrice = (exp(*newq1/maxLoss)/(exp(*newq1/maxLoss)+exp(newq2/maxLoss))) * 100;
+	*costToUser = fabs(*costToUser);
 }
 
 double MarketMaker::prediction_limit(double val) {

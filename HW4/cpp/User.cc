@@ -12,7 +12,7 @@ void User::change_cash(double amount) {
 	cash+=amount;
 }
 
-void User::change_portfolio(double amount) {
+void User::change_portfolio(int amount) {
 	shares += amount;
 }
 
