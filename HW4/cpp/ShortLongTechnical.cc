@@ -1,5 +1,8 @@
 #include "ShortLongTechnical.h"
 
+const char* ShortLongTechnical::name() {
+	return "tech_short_long";
+}
 
 void ShortLongTechnical::simulation_params(int timesteps,int* possible_jump_locations,double single_jump_probability,int short_length,int long_length,double max_long_exceed,double max_short_exceed,double margin) {
 	this->short_length=short_length;
@@ -13,18 +16,19 @@ void ShortLongTechnical::simulation_params(int timesteps,int* possible_jump_loca
 	this->long_average=0.0;
 }
 
-void ShortLongTechnical::trades_history(double trades,int time) {
-	if (execution_prices.size() < (unsigned int)long_length) {
+void ShortLongTechnical::trades_history(std::vector<Log::Execution> *trades,int time) {
+	execution_prices = trades;
+	if (execution_prices->size() < (unsigned int)long_length) {
 		trade=FALSE;
 		return;
 	}
 	short_average=0.0;
 	long_average=0.0;
-	int endIndex = execution_prices.size()-1;
+	int endIndex = execution_prices->size()-1;
 	for (int i=0;i<long_length;i++) {
 		if (i<short_length)
-			short_average+=execution_prices[endIndex-i];
-		long_average+=execution_prices[endIndex-i];
+			short_average+=(*execution_prices)[endIndex-i].price_per_share;
+		long_average+=(*execution_prices)[endIndex-i].price_per_share;
 	}
 	short_average/=short_length;
 	long_average/=long_length;

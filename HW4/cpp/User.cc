@@ -1,6 +1,6 @@
 #include "User.h"
 
-User::User(double cash,int initial_shares,char* name) {
+User::User(double cash,int initial_shares,const char* name) {
 	this->cash = cash;
 	this->initial_cash = this->cash;
 	this->shares = initial_shares;

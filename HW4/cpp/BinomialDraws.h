@@ -10,10 +10,9 @@ class BinomialDraws {
 		BinomialDraws(double initial_p=-1);
 		void do_jump();
 		int get_draw();
-
-//	private:
-		double p;
 		double normalvariate(double mu,double sigma);
+		
+		double p;
 
 };
 

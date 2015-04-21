@@ -1,5 +1,12 @@
 #include "Trader.h"
 
+const char* Trader::name() {
+	return "generic";
+}
+void Trader::simulation_params(int timesteps,int* possible_jump_locations,double single_jump_probability){}
+void Trader::new_information(int info,int time){printf("%s\n",name());}
+void Trader::trades_history(std::vector<Log::Execution> *trades,int time){}
+
 //inputs: objective, feasible, initial_price
 //outputs: final_shares, cancel
 void Trader::optimize_shares(int (*objective)(int),void (*feasible)(int,bool*,bool*),double initial_price,int* final_shares,bool* cancel) {
@@ -33,3 +40,4 @@ void Trader::execute_max(int shares,double (*execute)(int),double* price_per_sha
 	}
 	*final_shares = shares + 1;
 }
+

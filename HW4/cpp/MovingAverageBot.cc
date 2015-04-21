@@ -1,5 +1,9 @@
 #include "MovingAverageBot.h"
 
+const char* MovingAverageBot::name() {
+	return "fund_moving_average";
+}
+
 void MovingAverageBot::simulation_params(int timesteps,int* possible_jump_locations,double single_jump_probability, double start_belief,double alpha,int min_block_size,int start_block_size) {
 	this->timesteps=timesteps;
 	this->possible_jump_locations=possible_jump_locations;
@@ -14,7 +18,7 @@ void MovingAverageBot::new_information(int info,int time) {
 	belief = belief * alpha + info * 100 * (1 - alpha);
 }
 
-void MovingAverageBot::trades_history(double trades,int time) {
+void MovingAverageBot::trades_history(std::vector<Log::Execution> *trades,int time) {
 	this->trades = trades;
 }
 

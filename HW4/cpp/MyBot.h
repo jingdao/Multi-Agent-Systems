@@ -3,3 +3,4 @@
 #include "BinomialDraws.h"
 #include "LMSRFactory.h"
 #include "Prices.h"
+#include "TradingPopulation.h"
