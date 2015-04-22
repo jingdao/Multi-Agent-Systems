@@ -11,10 +11,12 @@ class ShortLongTechnical : public Trader {
 			BUY,SELL,FALSE
 		};
 		const char* name();
-		void simulation_params(int timesteps,int* possible_jump_locations,double single_jump_probability,int short_length=10,int long_length=10,double max_long_exceed=2.0,double max_short_exceed=2.0,double margin=0.05);
+		void simulation_params(int timesteps,int* possible_jump_locations,double single_jump_probability);
 //		void new_information(int info,int time);
 		void trades_history(std::vector<Log::Execution> *trades,int time);
-		void trading_opportunity(double (*cash_callback)(),int (*shares_callback)(),double (*check_callback)(MarketMaker::Transaction,int), double (*execute_callback)(MarketMaker::Transaction,int),double mu);
+		void trading_opportunity(double cash, int shares, double market_belief);
+		int buy_objective(int amount);
+		int sell_objective(int amount);
 
 	private:
 		int short_length,long_length;
@@ -25,11 +27,4 @@ class ShortLongTechnical : public Trader {
 		std::vector<Log::Execution> *execution_prices;
 		double (*execute_callback)(MarketMaker::Transaction,int);
 		double (*check_callback)(MarketMaker::Transaction,int);
-
-		double execute_buy(int amount);
-		double execute_sell(int amount);
-		int sell_objective(int amount);
-		int buy_objective(int amount);
-		void sell_feasible(int,bool*,bool*);
-		void buy_feasible(int,bool*,bool*);
 };

@@ -1,6 +1,6 @@
 #include "Log.h"
 
-void Log::event(int time,Event_type event_type,char* user,Buysell buysell,int quantity,double mu,double price_per_share) {
+void Log::event(int time,Event_type event_type,const char* user,MarketMaker::Transaction buysell,int quantity,double mu,double price_per_share) {
 	Event e = {time,event_type,user,buysell,quantity,price_per_share};
 	events.push_back(e);
 	if (event_type == EXECUTE && price_per_share != 0.0) {

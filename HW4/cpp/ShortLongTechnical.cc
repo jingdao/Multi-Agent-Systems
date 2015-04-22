@@ -4,11 +4,11 @@ const char* ShortLongTechnical::name() {
 	return "tech_short_long";
 }
 
-void ShortLongTechnical::simulation_params(int timesteps,int* possible_jump_locations,double single_jump_probability,int short_length,int long_length,double max_long_exceed,double max_short_exceed,double margin) {
-	this->short_length=short_length;
-	this->long_length=long_length;
-	this->max_short_exceed=max_short_exceed;
-	this->max_long_exceed=max_long_exceed;
+void ShortLongTechnical::simulation_params(int timesteps,int* possible_jump_locations,double single_jump_probability) {
+	this->short_length=10;
+	this->long_length=10;
+	this->max_short_exceed=2.0;
+	this->max_long_exceed=2.0;
 	this->margin=margin;
 	this->state=NONE;
 	this->trade=FALSE;
@@ -51,33 +51,23 @@ void ShortLongTechnical::trades_history(std::vector<Log::Execution> *trades,int 
 	}
 }
 
-void ShortLongTechnical::trading_opportunity(double (*cash_callback)(),int (*shares_callback)(),double (*check_callback)(MarketMaker::Transaction,int), double (*execute_callback)(MarketMaker::Transaction,int),double mu) {
+void ShortLongTechnical::trading_opportunity(double cash, int shares, double market_belief) {
 	if (trade==FALSE)
 		return;
-	this->execute_callback = execute_callback;
-	this->check_callback = check_callback;
-//	int shares,final_shares;
-//	bool cancel;
-//	double price_per_share;
+	int shares_to_trade,final_shares_to_trade;
+	bool cancel;
+	double price_per_share;
 
-//	if (trade == SELL) {
-//		optimize_shares(this->sell_objective,this->sell_feasible,mu,&shares,&cancel);
-//		if (shares > 0)
-//			execute_max(shares,this->execute_sell,&price_per_share,&final_shares);
-//	} else  if (trade == BUY) {
-//		optimize_shares(this->buy_objective,this->buy_feasible,mu,&shares,&cancel);
-//		if (shares > 0)
-//			execute_max(shares,this->execute_buy,&price_per_share,&final_shares);
-//	}
+	if (trade == SELL) {
+		optimize_shares(MarketMaker::SELL,&shares_to_trade,&cancel);
+		if (shares_to_trade > 0)
+			execute_max(shares_to_trade,MarketMaker::SELL,&price_per_share,&final_shares_to_trade);
+	} else if (trade == BUY) {
+		optimize_shares(MarketMaker::BUY,&shares_to_trade,&cancel);
+		if (shares_to_trade > 0)
+			execute_max(shares_to_trade,MarketMaker::BUY,&price_per_share,&final_shares_to_trade);
+	}
 	
-}
-
-double ShortLongTechnical::execute_buy(int amount) {
-	return execute_callback(MarketMaker::BUY,amount);
-}
-
-double ShortLongTechnical::execute_sell(int amount) {
-	return execute_callback(MarketMaker::SELL,amount);
 }
 
 int ShortLongTechnical::sell_objective(int amount) {
@@ -100,14 +90,4 @@ int ShortLongTechnical::buy_objective(int amount) {
 		return amount;
 	else
 		return -1;
-}
-
-void ShortLongTechnical::sell_feasible(int amount, bool* feas, bool* used_cancel ) {
-	*feas = amount < 200;
-	*used_cancel = false;
-}
-
-void ShortLongTechnical::buy_feasible(int amount, bool* feas, bool* used_cancel) {
-	*feas = amount < 200;
-	*used_cancel = false;
 }

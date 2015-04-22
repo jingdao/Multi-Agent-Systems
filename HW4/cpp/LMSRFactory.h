@@ -7,8 +7,6 @@ class LMSRFactory {
 		LMSRFactory(double b);
 		LMSR* make();
 
-//	private:
+	private:
 		double b;
-		char name[16];
-
 };

@@ -4,14 +4,14 @@ const char* MovingAverageBot::name() {
 	return "fund_moving_average";
 }
 
-void MovingAverageBot::simulation_params(int timesteps,int* possible_jump_locations,double single_jump_probability, double start_belief,double alpha,int min_block_size,int start_block_size) {
+void MovingAverageBot::simulation_params(int timesteps,int* possible_jump_locations,double single_jump_probability) {
 	this->timesteps=timesteps;
 	this->possible_jump_locations=possible_jump_locations;
 	this->single_jump_probability=single_jump_probability;
-	this->belief=start_belief;
-	this->alpha=alpha;
-	this->min_block_size=min_block_size;
-	this->start_block_size=start_block_size;
+	this->belief=50.0;
+	this->alpha=0.9;
+	this->min_block_size=2;
+	this->start_block_size=20;
 }
 
 void MovingAverageBot::new_information(int info,int time) {
@@ -22,7 +22,7 @@ void MovingAverageBot::trades_history(std::vector<Log::Execution> *trades,int ti
 	this->trades = trades;
 }
 
-void MovingAverageBot::trading_opportunity(double (*cash_callback)(),int (*shares_callback)(),double (*check_callback)(MarketMaker::Transaction,int), double (*execute_callback)(MarketMaker::Transaction,int),double market_belief) {
+void MovingAverageBot::trading_opportunity(double cash, int shares, double market_belief) {
 	double current_belief = (belief + market_belief) / 2.0;
 	current_belief = current_belief<99.0 ? current_belief : 99.0;
 	current_belief = current_belief>1.0 ? current_belief : 1.0;

@@ -1,25 +1,23 @@
 #pragma once
 #include <vector>
+#include "MarketMaker.h"
 
 class Log {
 	public:
 		enum Event_type {
 			CHECK,EXECUTE
 		};
-		enum Buysell {
-			BUY,SELL
-		};
 		struct Event {
 			int time;
 			Event_type event_type;
-			char* user;
-			Buysell buysell;
+			const char* user;
+			MarketMaker::Transaction buysell;
 			int quantity;
 			double price_per_share;
 		};
 		struct Execution {
 			double price_per_share;
-			Buysell buysell;
+			MarketMaker::Transaction buysell;
 			int quantity;
 			double mu;	 
 		};
@@ -27,7 +25,7 @@ class Log {
 			int time;
 			double mu;
 		};
-		void event(int time,Event_type event_type,char* user,Buysell buysell,int quantity,double mu,double price_per_share);
+		void event(int time,Event_type event_type,const char* user,MarketMaker::Transaction buysell,int quantity,double mu,double price_per_share);
 		std::vector<Event> filter(Event_type event_type);
 
 		std::vector<Event> events;

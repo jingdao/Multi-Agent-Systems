@@ -1,14 +1,14 @@
 #include "TradingPopulation.h"
 
-TradingPopulation::TradingPopulation(int timesteps,int* possible_jump_locations,double single_jump_probability,std::vector<Trader*> traders,User* user) {
+TradingPopulation::TradingPopulation(int timesteps,int* possible_jump_locations,double single_jump_probability,std::vector<Trader*> *traders,User* user) {
 	this->timesteps = timesteps;
 	this->possible_jump_locations = possible_jump_locations;
 	this->single_jump_probability = single_jump_probability;
 
-	for (unsigned int i=0;i<traders.size();i++) {
-		traders[i]->simulation_params(timesteps,possible_jump_locations,single_jump_probability);
-		User* u = new User(user->initial_cash,user->initial_shares,traders[i]->name());
-		Trader_tuple t = {traders[i],u};
+	for (unsigned int i=0;i<traders->size();i++) {
+		(*traders)[i]->simulation_params(timesteps,possible_jump_locations,single_jump_probability);
+		User* u = new User(user->initial_cash,user->initial_shares,(*traders)[i]->name());
+		Trader_tuple t = {(*traders)[i],u};
 		active_traders.push_back(t);
 	}
 }
