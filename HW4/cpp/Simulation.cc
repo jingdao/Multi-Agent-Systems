@@ -8,8 +8,7 @@ Simulation::Simulation(int timesteps,LMSRFactory* market_fact,std::vector<Trader
 	for (int i=0;i<timesteps;i++)
 		this->possible_jump_locations[i]=i;
 	if (jump_probability < 0)
-//		this->jump_probability = 1.0 / timesteps;
-		this->jump_probability = 0.0;
+		this->jump_probability = 1.0 / timesteps;
 	else
 		this->jump_probability = jump_probability;
 	this->initial_cash = initial_cash;
@@ -18,8 +17,7 @@ Simulation::Simulation(int timesteps,LMSRFactory* market_fact,std::vector<Trader
 	this->market_fact = market_fact;
 	this->trading_bots = nullptr;
 	this->log = new Log();
-	this->initial_p = 0.5;
-//	this->initial_p = initial_p;
+	this->initial_p = initial_p;
 }
 
 void Simulation::simulate() {
@@ -51,6 +49,7 @@ void Simulation::simulate() {
 		for (unsigned int j=0;j<active_traders.size();j++) {
 			Trader* trader = active_traders[j].trader;
 			User* trader_user = active_traders[j].user;
+			trader->time = i;
 			trader->trading_opportunity(trader_user->cash,trader_user->shares,market->mu);
 		}
 	}

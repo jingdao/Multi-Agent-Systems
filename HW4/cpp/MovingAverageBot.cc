@@ -27,7 +27,7 @@ void MovingAverageBot::trading_opportunity(double cash, int shares, double marke
 	current_belief = current_belief<99.0 ? current_belief : 99.0;
 	current_belief = current_belief>1.0 ? current_belief : 1.0;
 	bool bought_once=false, sold_once=false;
-	double block_size = start_block_size;
+	int block_size = start_block_size;
 	while (true) {
 		if (!sold_once && (check_callback(MarketMaker::BUY,block_size) < current_belief)) {
 			execute_callback(MarketMaker::BUY,block_size);

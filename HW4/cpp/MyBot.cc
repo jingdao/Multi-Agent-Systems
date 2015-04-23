@@ -17,27 +17,42 @@ void MyBot::new_information(int info,int time) {
 }
 
 void MyBot::trades_history(std::vector<Log::Execution> *trades,int time) {
+	//trades is a pointer to a vector of Executions
+	//Execution is a struct with the following fields:
+	//{execution_price, BUY/SELL, quantity, previous_market_price}
 	this->trades = trades;
 }
 
 void MyBot::trading_opportunity(double cash, int shares, double market_belief) {
+	//cash: how much cash the bot has right now
+	//shares: how many shares the bot owns
+	//market_belief: the market's belief about the value of a share
+	
+	//example: check the price per share
+	//check_callback(MarketMaker::BUY,0);
+
+	//example: buy shares
+	//execute_callback(MarketMaker::BUY,0);
 
 }
 
 int main(int argc, char* argv[]) {
 	srand (time(NULL));
 
-//	User u(0,0);
+	// create 5 fundamental bots and 2 technical bots 
+	std::vector<Trader*> agents;
+//	agents.push_back(new MyBot());
 	std::vector<Trader*> bots = TradingPopulation::get_bots(5,2);
-	bots.push_back(new MyBot());
-//	std::vector<Log::Execution> x;
-//	TradingPopulation tp(10,nullptr,0.2,&bots,&u);
-//	tp.new_information(&bd,&x,0);
-//	std::vector<TradingPopulation::Trader_tuple> t = tp.active_traders;
-//	for (unsigned int i=0;i<t.size();i++) {
-//		printf("%s %d %f\n",t[i].user->name,t[i].user->shares,t[i].user->cash);
-//	}
+	for (unsigned int i=0;i<bots.size();i++)
+		agents.push_back(bots[i]);
 
-//	PlotSimulation::run(&bots,1,250);
-	RunExperiments::run(&bots,100,100,250);
+	int num_simulations = 1000;
+	int num_timesteps = 100;
+	double lmsr_b = 250;
+
+	// runs a single simulation and prints out statistics
+//	PlotSimulation::run(&agents,num_timesteps,lmsr_b);
+
+	// runs multiple simulations and prints out average profit
+	RunExperiments::run(&agents,num_timesteps,num_simulations,lmsr_b);
 }

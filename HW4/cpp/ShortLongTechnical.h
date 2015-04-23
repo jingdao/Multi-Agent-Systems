@@ -25,6 +25,4 @@ class ShortLongTechnical : public Trader {
 		Trade trade;
 		State state;
 		std::vector<Log::Execution> *execution_prices;
-		double (*execute_callback)(MarketMaker::Transaction,int);
-		double (*check_callback)(MarketMaker::Transaction,int);
 };

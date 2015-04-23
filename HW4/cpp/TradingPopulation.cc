@@ -7,7 +7,7 @@ TradingPopulation::TradingPopulation(int timesteps,int* possible_jump_locations,
 
 	for (unsigned int i=0;i<traders->size();i++) {
 		(*traders)[i]->simulation_params(timesteps,possible_jump_locations,single_jump_probability);
-		User* u = new User(user->initial_cash,user->initial_shares,(*traders)[i]->name());
+		User* u = new User(user->initial_cash,user->initial_shares,i);
 		Trader_tuple t = {(*traders)[i],u};
 		active_traders.push_back(t);
 	}

@@ -11,6 +11,7 @@ class Log {
 			int time;
 			Event_type event_type;
 			const char* user;
+			int id;
 			MarketMaker::Transaction buysell;
 			int quantity;
 			double price_per_share;
@@ -25,7 +26,7 @@ class Log {
 			int time;
 			double mu;
 		};
-		void event(int time,Event_type event_type,const char* user,MarketMaker::Transaction buysell,int quantity,double mu,double price_per_share);
+		void event(int time,Event_type event_type,const char* user,int id,MarketMaker::Transaction buysell,int quantity,double mu,double price_per_share);
 		std::vector<Event> filter(Event_type event_type);
 
 		std::vector<Event> events;

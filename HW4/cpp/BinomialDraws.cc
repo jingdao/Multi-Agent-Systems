@@ -14,7 +14,7 @@ BinomialDraws::BinomialDraws(double initial_p) {
 //standard Box-Mueller transform
 double BinomialDraws::normalvariate(double mu, double sigma) {
 	const double epsilon = DBL_MIN;
-	const double two_pi = 2.0*M_PI;
+	const double two_pi = 2.0*3.14159265358979323846;
 	static double z0, z1;
 	static bool generate;
 	generate = !generate;

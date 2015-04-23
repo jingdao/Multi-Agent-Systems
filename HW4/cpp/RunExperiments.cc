@@ -21,12 +21,12 @@ void RunExperiments::run(std::vector<Trader*> *trader_list,int timesteps,int sim
 				results.push_back(p);
 			}
 			double d = sim_obj.market->user_account->profit(sim_obj.liquidation);
-			Profit p = {c,d,d,d,d};
+			Profit p = {c,d,d,d,d*d};
 			results.push_back(p);
 		} else {
-			for (unsigned int j=0;j<profits.size();j++) {
+			for (unsigned int j=0;j<results.size();j++) {
 				double d;
-				if (j==profits.size()-1)
+				if (j==results.size()-1)
 					d = sim_obj.market->user_account->profit(sim_obj.liquidation);
 				else
 					d = profits[j].profit_sum;
@@ -41,16 +41,18 @@ void RunExperiments::run(std::vector<Trader*> *trader_list,int timesteps,int sim
 	}
 
 	printf("\nProfits (%d samples)\n",simulations);
-	printf("%-20s %8s %8s %8s %7s\n","trader","mean","min","max","std_dev");
+	printf("%-20s %10s %10s %10s %8s\n","trader","mean","min","max","std_dev");
 	unsigned int i;
 	for (i=0;i<results.size()-1;i++) {
 		results[i].mean /= simulations;
-		results[i].std_dev = sqrt(results[i].std_dev / simulations + results[i].mean * results[i].mean);
-		printf("%-20s %8.2f %8.2f %8.2f %7.2f\n",
+		results[i].std_dev = sqrt(results[i].std_dev / simulations - results[i].mean * results[i].mean);
+		printf("%-20s %10.2f %10.2f %10.2f %8.2f\n",
 			results[i].trader_name,results[i].mean,
 			results[i].min,results[i].max,results[i].std_dev);
 	}
-	printf("LMSR(b=%6.2f)       %8.2f %8.2f %8.2f %7.2f\n",
+	results[i].mean /= simulations;
+	results[i].std_dev = sqrt(results[i].std_dev / simulations - results[i].mean * results[i].mean);
+	printf("LMSR(b=%6.2f)       %10.2f %10.2f %10.2f %8.2f\n",
 			lmsr_b,results[i].mean,
 			results[i].min,results[i].max,results[i].std_dev);
 

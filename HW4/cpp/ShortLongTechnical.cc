@@ -6,10 +6,10 @@ const char* ShortLongTechnical::name() {
 
 void ShortLongTechnical::simulation_params(int timesteps,int* possible_jump_locations,double single_jump_probability) {
 	this->short_length=10;
-	this->long_length=10;
+	this->long_length=30;
 	this->max_short_exceed=2.0;
 	this->max_long_exceed=2.0;
-	this->margin=margin;
+	this->margin=0.05;
 	this->state=NONE;
 	this->trade=FALSE;
 	this->short_average=0.0;
@@ -84,7 +84,7 @@ int ShortLongTechnical::sell_objective(int amount) {
 int ShortLongTechnical::buy_objective(int amount) {
 	double execution_price = check_callback(MarketMaker::BUY,amount);
 	if (execution_price <= long_average + max_long_exceed &&
-		execution_price >= short_average + max_short_exceed &&
+		execution_price <= short_average + max_short_exceed &&
 		execution_price < 100.0 &&
 		execution_price > 0.0)
 		return amount;

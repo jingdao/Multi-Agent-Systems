@@ -1,11 +1,11 @@
 #include "User.h"
 
-User::User(double cash,int initial_shares,const char* name) {
+User::User(double cash,int initial_shares,int id) {
 	this->cash = cash;
 	this->initial_cash = this->cash;
 	this->shares = initial_shares;
 	this->initial_shares = this->shares;
-	this->name = name;
+	this->id = id;
 }
 
 void User::change_cash(double amount) {
