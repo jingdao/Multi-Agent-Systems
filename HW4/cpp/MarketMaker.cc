@@ -1,5 +1,7 @@
 #include "MarketMaker.h"
 
+MarketMaker::~MarketMaker() {}
+
 //inputs: transaction,qtyToBuySell,qtyOutstanding,maxLoss
 //outputs: costToUser,newq1,currentPrice
 void MarketMaker::hansonPriceCheck(Transaction transaction,int qtyToBuySell,int qtyOutstanding, double maxLoss, double* costToUser, int* newq1, double* currentPrice){

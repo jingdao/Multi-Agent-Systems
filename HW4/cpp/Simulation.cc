@@ -16,8 +16,21 @@ Simulation::Simulation(int timesteps,LMSRFactory* market_fact,std::vector<Trader
 	this->timesteps = timesteps;
 	this->market_fact = market_fact;
 	this->trading_bots = nullptr;
+	this->market = nullptr;
+	this->p_vec = nullptr;
 	this->log = new Log();
 	this->initial_p = initial_p;
+}
+
+Simulation::~Simulation() {
+	delete[] possible_jump_locations;
+	delete log;
+	if (market)
+		delete market;
+	if (trading_bots)
+		delete trading_bots;
+	if (p_vec)
+		delete[] p_vec;
 }
 
 void Simulation::simulate() {

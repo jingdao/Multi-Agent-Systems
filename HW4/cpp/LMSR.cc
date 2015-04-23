@@ -10,6 +10,10 @@ LMSR::LMSR(double max_loss, int quantity_outstanding,double mu,User* user_accoun
 		this->user_account=new User(0,0);
 }
 
+LMSR::~LMSR() {
+	delete user_account;
+}
+
 double LMSR::execute(Transaction buysell,int quantity,User* user,bool cancel) {
 	if (cancel)
 		return 0;

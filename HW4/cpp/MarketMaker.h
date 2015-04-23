@@ -7,6 +7,7 @@ class MarketMaker {
 		enum Transaction {
 			BUY,SELL
 		};
+		virtual ~MarketMaker();
 		static void hansonPriceCheck(Transaction transaction,int qtyToBuySell,int qtyOutstanding, double maxLoss, double* costToUser, int* newq1, double* currentPrice);
 		static double prediction_limit(double val);
 		virtual double execute(Transaction buysell,int quantity,User* user,bool cancel=false) = 0;

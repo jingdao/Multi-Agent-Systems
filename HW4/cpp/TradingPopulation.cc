@@ -13,6 +13,11 @@ TradingPopulation::TradingPopulation(int timesteps,int* possible_jump_locations,
 	}
 }
 
+TradingPopulation::~TradingPopulation() {
+	for (unsigned int i=0;i<active_traders.size();i++)
+		delete active_traders[i].user;
+}
+
 void TradingPopulation::new_information(BinomialDraws* get_info_callback,std::vector<Log::Execution> *execution_prices,int round_number) {
 	for (unsigned int i=0;i<active_traders.size();i++) {
 		active_traders[i].trader->trades_history(execution_prices,round_number);

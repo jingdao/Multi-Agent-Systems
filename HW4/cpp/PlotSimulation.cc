@@ -5,23 +5,21 @@ void PlotSimulation::run(std::vector<Trader*> *traders,int timesteps,double lmsr
 	Simulation sim_obj(timesteps,&market_fact,traders);
 	sim_obj.simulate();
 
-	if (0) {
-//		std::vector<Log::Event> *events = &sim_obj.log->events;
-		std::vector<Log::Event> e = sim_obj.log->filter(Log::EXECUTE);
-		std::vector<Log::Event> *events = &e;
-		for (unsigned int i=0;i<events->size();i++) {
-			Log::Event ev = (*events)[i];
-			printf("%3d %5s %.6s%1d %4s %3d %5.2f\n",
-				ev.time,
-				ev.event_type==Log::CHECK?"check":"exec",
-				ev.user,
-				ev.id,
-				ev.buysell==MarketMaker::BUY?"buy":"sell",
-				ev.quantity,
-				ev.price_per_share
-			);
-		}
+#ifdef DEBUG
+	std::vector<Log::Event> *events = &sim_obj.log->events;
+	for (unsigned int i=0;i<events->size();i++) {
+		Log::Event ev = (*events)[i];
+		printf("%3d %5s %.6s%1d %4s %3d %5.2f\n",
+			ev.time,
+			ev.event_type==Log::CHECK?"check":"exec",
+			ev.user,
+			ev.id,
+			ev.buysell==MarketMaker::BUY?"buy":"sell",
+			ev.quantity,
+			ev.price_per_share
+		);
 	}
+#endif
 
 	std::vector<Log::Belief> *beliefs = &sim_obj.log->beliefs;
 	printf("\nBeliefs\n");

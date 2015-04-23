@@ -41,18 +41,24 @@ int main(int argc, char* argv[]) {
 
 	// create 5 fundamental bots and 2 technical bots 
 	std::vector<Trader*> agents;
-//	agents.push_back(new MyBot());
+	agents.push_back(new MyBot());
 	std::vector<Trader*> bots = TradingPopulation::get_bots(5,2);
 	for (unsigned int i=0;i<bots.size();i++)
 		agents.push_back(bots[i]);
 
-	int num_simulations = 1000;
 	int num_timesteps = 100;
 	double lmsr_b = 250;
 
+#if defined(SINGLE_RUN) || defined(DEBUG)
 	// runs a single simulation and prints out statistics
-//	PlotSimulation::run(&agents,num_timesteps,lmsr_b);
-
+	PlotSimulation::run(&agents,num_timesteps,lmsr_b);
+#else
 	// runs multiple simulations and prints out average profit
+	int num_simulations = 1000;
 	RunExperiments::run(&agents,num_timesteps,num_simulations,lmsr_b);
+#endif
+
+	//clean up
+	for (unsigned int i=0;i<agents.size();i++)
+		delete agents[i];
 }

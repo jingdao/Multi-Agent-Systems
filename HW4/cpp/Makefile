@@ -3,7 +3,8 @@ CXXFLAGS  = -O2 -std=c++11
 INCLUDE_DIRS =
 LIB_DIRS =
 LDFLAGS = -lm
-debug: CXXFLAGS = -ggdb3 -O0 -Wall -std=c++11
+debug: CXXFLAGS = -ggdb3 -O0 -Wall -std=c++11 -DDEBUG
+single: CXXFLAGS = -ggdb3 -O0 -Wall -std=c++11 -DSINGLE_RUN
 SRC  =  BinomialDraws.cc MarketMaker.cc User.cc LMSR.cc LMSRFactory.cc Prices.cc Trader.cc MovingAverageBot.cc ShortLongTechnical.cc RangeTechnical.cc TradingPopulation.cc Log.cc Simulation.cc PlotSimulation.cc RunExperiments.cc MyBot.cc
 EXE = MyBot
 OBJ = $(patsubst %.cc,%.o,$(SRC))
@@ -14,6 +15,8 @@ $(EXE): $(OBJ)
 all: $(EXE)
 
 debug: all
+
+single: all
 
 clean:
 	rm -f $(EXE) $(OBJ) .depend

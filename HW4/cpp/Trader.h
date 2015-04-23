@@ -5,6 +5,7 @@
 
 class Trader {
 	public:
+		virtual ~Trader();
 		virtual const char* name();
 		virtual void simulation_params(int timesteps,int* possible_jump_locations,double single_jump_probability);
 		virtual void new_information(int info,int time);

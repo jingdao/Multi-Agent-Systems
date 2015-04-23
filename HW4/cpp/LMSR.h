@@ -5,6 +5,7 @@
 class LMSR : public MarketMaker {
 	public:
 		LMSR(double max_loss, int quantity_outstanding=0,double mu=50.0,User* user_account=nullptr);
+		~LMSR();
 		double execute(Transaction buysell,int quantity,User* user,bool cancel=false);
 		double price_check(Transaction buysell,int quantity);
 		User* user_account;
