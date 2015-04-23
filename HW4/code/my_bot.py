@@ -21,6 +21,7 @@ class MyBot(traders.Trader):
         self.single_jump_probability = single_jump_probability
         # A place to store the information we get
         self.information = []
+#        print "params",timesteps,possible_jump_locations,single_jump_probability
     
     def new_information(self, info, time):
         """Get information about the underlying market value.
@@ -30,6 +31,7 @@ class MyBot(traders.Trader):
         time: The current timestep for the experiment. It
           matches up with possible_jump_locations. It will
           be between 0 and self.timesteps - 1."""
+#        print "new information",info,time
         self.information.append(info)
 
     def trades_history(self, trades, time):
@@ -37,6 +39,7 @@ class MyBot(traders.Trader):
         [(execution_price, 'buy' or 'sell', quantity,
           previous_market_belief), ...]
         Note that this isn't just new trades; it's all of them."""
+#        print "trades_history",trades,time
         self.trades = trades
 
     def trading_opportunity(self, cash_callback, shares_callback,
@@ -58,23 +61,25 @@ class MyBot(traders.Trader):
         # Place a randomly sized trade in the direction of
         # our last information. What could possibly go wrong?
         quantity = random.choice(xrange(1, 100))
-        if (self.information[-1] == 1
-            and check_callback('buy', quantity) < 99.0):
-            execute_callback('buy', quantity)
-        elif check_callback('sell', quantity) > 1.0:
-            execute_callback('sell', quantity)
+#        if (self.information[-1] == 1
+#            and check_callback('buy', quantity) < 99.0):
+#            execute_callback('buy', quantity)
+#        elif check_callback('sell', quantity) > 1.0:
+#            execute_callback('sell', quantity)
 
 def main():
-    bots = [MyBot()]
+#    random.seed(1)
+#    bots = [MyBot()]
+    bots = []
     bots.extend(other_bots.get_bots(5,2))
     # Plot a single run. Useful for debugging and visualizing your
     # bot's performance. Also prints the bot's final profit, but this
     # will be very noisy.
-    plot_simulation.run(bots,timesteps=100,lmsr_b=250)
+#    plot_simulation.run(bots,timesteps=10,lmsr_b=250)
     
     # Calculate statistics over many runs. Provides the mean and
     # standard deviation of your bot's profit.
-#    run_experiments.run(bots, simulations=1500, lmsr_b=250)
+    run_experiments.run(bots, simulations=1500, lmsr_b=250)
 
 # Extra parameters to plot_simulation.run:
 #   timesteps=100, lmsr_b=150

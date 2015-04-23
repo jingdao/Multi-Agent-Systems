@@ -17,14 +17,15 @@ def run(trader_list, timesteps=100, num_processes=2, simulations=2000,
         lmsr_b=150):
     marketmakers = [prices.LMSRFactory(lmsr_b)]
     
-    pool = multiprocessing.Pool(num_processes)
+#    pool = multiprocessing.Pool(num_processes)
     sim_objects = []
     for marketmaker_fact in marketmakers:
         for i in range(simulations):
             sim_objects.append(simulation.Simulation(
                     timesteps, marketmaker_fact,
                     trader_list))
-    results = pool.map(worker_process, sim_objects)
+#    results = pool.map(worker_process, sim_objects)
+    results = map(worker_process,sim_objects)
     results_by_market = {}
     max_profit_by_market = {}
     min_profit_by_market = {}

@@ -18,9 +18,13 @@ def run(traders, timesteps=100, lmsr_b=150):
     sim_obj.simulate()
     pyplot.figure()
     x_overall = plot_beliefs(sim_obj.log.beliefs)
+#    print sim_obj.log.beliefs
     pyplot.plot(range(len(sim_obj.p_vec)),
                 [a * 100.0 for a in sim_obj.p_vec],
                 ls='--', color='r')
     pyplot.ylim((0, 100))
     print sim_obj.profits_by_user()
-    pyplot.show()
+    ev=sim_obj.log.filter("execute")
+#    for e in ev:
+#        print e
+#    pyplot.show()

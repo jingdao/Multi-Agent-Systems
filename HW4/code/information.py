@@ -27,7 +27,10 @@ class BinomialDraws(object):
         self._p = new_p
 
     def get_draw(self):
-        if random.random() < self._p:
+        r = random.random()
+#        print (1 if r < self._p else 0)
+        if r < self._p:
             return 1
         else:
             return 0
+

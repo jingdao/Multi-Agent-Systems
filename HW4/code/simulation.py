@@ -78,6 +78,7 @@ class Simulation(object):
         self.market_maker_user = None
         self.log = Log()
         self.initial_p = initial_p
+#        self.initial_p = 0.5
         
     def simulate(self):
         market = self.market_fact.make()
@@ -105,6 +106,8 @@ class Simulation(object):
             for trader, trader_user in active_traders:
                 check_flag = Flag()
                 execute_flag = Flag()
+                trader.trades=self.log.execution_prices
+                trader.execution_prices = [pr[0] for pr in self.log.execution_prices]
                 trader.trading_opportunity(
                     make_cash_callback(trader_user),
                     make_shares_callback(trader_user, market),
@@ -121,9 +124,11 @@ class Simulation(object):
 
     def profits_by_user(self):
         assert self.user_list is not None
+#        print self.market_maker_user.shares,self.market_maker_user.cash
         ret = {self.market_fact.name:[self.market_maker_user.profit(
                 self.liquidation)]}
         for trader_name, user in self.user_list:
+#            print trader_name,user.shares,user.cash
             ret.setdefault(trader_name, []).append(
                 user.profit(self.liquidation))
         for trader_name, profit_list in ret.iteritems():
