@@ -1,5 +1,6 @@
 HW1/*
 **/*.swp
+**/*.swo
 **/*.pyc
 !HW1/*.c
 !HW1/*.cpp

@@ -44,19 +44,13 @@ void Trader::execute_max(int shares,MarketMaker::Transaction buysell,double* pri
 
 double Trader::check_callback(MarketMaker::Transaction buysell,int quantity) {
 	double per_share = Prices::check(buysell,quantity,stock_maker,user);
-#ifdef DEBUG
 	log->event(time,Log::CHECK,name(),user->id,buysell,quantity,stock_maker->mu,per_share);
-#endif
 	return per_share;
 }
 
 double Trader::execute_callback(MarketMaker::Transaction buysell,int quantity) {
-#ifdef DEBUG
 	double previous_mu = stock_maker->mu;
-#endif
 	double success = Prices::execute(buysell,quantity,stock_maker,user);
-#ifdef DEBUG
 	log->event(time,Log::EXECUTE,name(),user->id,buysell,quantity,previous_mu,success);
-#endif
 	return success;
 }

@@ -54,7 +54,7 @@ int main(int argc, char* argv[]) {
 	PlotSimulation::run(&agents,num_timesteps,lmsr_b);
 #else
 	// runs multiple simulations and prints out average profit
-	int num_simulations = 1000;
+	int num_simulations = 1500;
 	RunExperiments::run(&agents,num_timesteps,num_simulations,lmsr_b);
 #endif
 
